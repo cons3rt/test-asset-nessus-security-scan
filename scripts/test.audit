@@ -1,0 +1,7 @@
+<check_type: "Unix">
+<item>
+name: "min_password_length"
+description: "Minimum password length"
+value: "14..MAX"
+</item>
+</check_type>
