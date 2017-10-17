@@ -1,7 +1,7 @@
 # test-asset-nessus-security-scan
 Sample CONS3RT test asset that performs a Nessus security port scanning of all systems in the deployment.  Provide credentials for more a exploratory security scan.
 
-Reference these [CONS3RT Knowledge Base articles](https://kb.cons3rt.com/kb/testing) for more information about creating your own test asset.
+Reference this [CONS3RT knowledge base article](https://kb.cons3rt.com/kb/elastic-tests/building-a-nessus-test) for more information about creating your own Nessus test asset.
 
 ### Recipe for using this sample Nessus Scan
 
