@@ -11,9 +11,9 @@ Reference these [CONS3RT Knowledge Base articles](https://kb.cons3rt.com/kb/test
 * Create a zip file containing the parent directory, this is your asset zip file/
 * Follow [this article](https://kb.cons3rt.com/kb/assets/importing-your-asset-zip-file) to import your asset zip file into CONS3RT.
 * Once your asset is imported, you will receive an email, and it will be available in CONS3RT under "Tests" from the main menu.
-* Follow [this video](https://www.youtube.com/watch?v=kL7P2s_eyLo) to add your new Nessus Test to a deployment, and run a scan!
+* Follow [this article](https://kb.cons3rt.com/kb/deployments/creating-a-deployment) to add your new Nessus Test to a deployment, and run a scan!
 
-Please feel free to contact the CONS3RT community team with any questions: milcloud@jackpinetech.com.
+Please feel free to contact the CONS3RT community team with any questions: [support@cons3rt.com](mailto:support@cons3rt.com).
 
 ---
 
