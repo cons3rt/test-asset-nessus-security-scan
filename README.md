@@ -17,7 +17,7 @@ described in the steps below.
 * If you need a credentialed scan, update credentials in the `scripts/nessus-credentials.txt` file
 * For Windows, remove the `nessus.audit` property in `config/nessus-config.properties`
 * Set the `nessus.audit-category` property in `config/nessus-config.properties` to either `Unix` or `Windows`
-* Updated the `name` and `description` to the `asset.properties` file
+* Update the `name` and `description` to the `asset.properties` file
 * If not using credentials, remove the `scripts/nessus-credentials.txt` file
 * If using Windows, remove the `scripts/test.audit` file
 * Create a zip file and import your Test Asset under the "Tests" category in CONS3RT
