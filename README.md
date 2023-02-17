@@ -1,44 +1,138 @@
 # test-asset-nessus-security-scan
-Sample CONS3RT test asset that performs a Nessus security port scanning of all systems in the deployment.  Provide credentials for more a exploratory security scan.
 
-Reference this [CONS3RT knowledge base article](https://kb.cons3rt.com/kb/elastic-tests/building-a-nessus-test) for more information about creating your own Nessus test asset.
+Sample CONS3RT test asset that performs a Nessus security port scanning 
+of either of all systems in the deployment, or systems identities with the 
+`nessus.targets` custom property.  For a credentialed scan, edit the
+`scripts/nessus-credentials.txt` file in this asset, or try the sample 
+[Windows credentialed scan](https://github.com/cons3rt/test-asset-nessus-windows-credentialed-scan).  
 
-### Recipe for using this sample Nessus Scan
+## Build your own Nessus Scan Asset
 
-* Clone this git repository
-* If you'd like the more exploratory scans, update the the scripts/nessus-credentials.txt file with the credentials you plan to apply to your systems.
-* If desired, edit the name and description and other info in the asset.properties file.
-* Create a zip file containing the parent directory, this is your asset zip file/
-* Follow [this article](https://kb.cons3rt.com/kb/assets/importing-your-asset-zip-file) to import your asset zip file into CONS3RT.
-* Once your asset is imported, you will receive an email, and it will be available in CONS3RT under "Tests" from the main menu.
-* Follow [this article](https://kb.cons3rt.com/kb/deployments/creating-a-deployment) to add your new Nessus Test to a deployment, and run a scan!
+Use this as a sample for building your own Nessus Test Asset.  This 
+asset will not work out of the box, it will take some configuration as 
+described in the steps below.  
 
-Please feel free to contact the CONS3RT community team with any questions: [support@cons3rt.com](mailto:support@cons3rt.com).
+* Clone or download this git repository
+* If not using credentials, remove the `nessus.credentials` property in `config/nessus-config.properties`
+* If you need a credentialed scan, update credentials in the `scripts/nessus-credentials.txt` file
+* For Windows, remove the `nessus.audit` property in `config/nessus-config.properties`
+* Set the `nessus.audit-category` property in `config/nessus-config.properties` to either `Unix` or `Windows`
+* Updated the `name` and `description` to the `asset.properties` file
+* If not using credentials, remove the `scripts/nessus-credentials.txt` file
+* If using Windows, remove the `scripts/test.audit` file
+* Create a zip file and import your Test Asset under the "Tests" category in CONS3RT
 
----
+### Specifying Credentials
 
-# **_Basic Nessus Security Scan_**
+In order to run a credentialed Nessus scan, first ensure that the credentials 
+exist and are valid on the target virtual machine(s).  Second, use the 
+`scripts/nessus-credentials.txt` file to specify those credentials.  Multiple 
+credentials may be specified with a `--break--` in between as shown in the 
+sample `nessus-credentials.txt` provided in this sample asset.
 
-This test asset should be added to a deployment whenever a nessus scan is desired.  It is not bound to any particular system module configuration (virtual host, physical host, appliance, device).  It supports scanning multiple non-homogeneous host types (i.e linux, windows, etc).  
+```
+# Windows credentials example:
 
-If this test asset is included within a deployment alongside other hosts, those hosts will be scanned for vulnerabilities, unless the scan is otherwise directed at a target by deployment properties. 
+credential_type=WINDOWS_PASSWORD
+username=administrator
+password={REPLACE_WINDOWS_ADMIN_PASSWORD}
 
-If login credentials for the hosts to be scanned are provided in the nessus-credentials.txt file, more exploratiry login security scans will be run.
+# Linux/Unix SSH credentials example:
 
-This test can also be used in a test-only deployment to scan any desired target using the nessus.targets property.
+credential_type=SSH_PASSWORD
+username=root
+password={REPLACE_SSH_PASSWORD}
 
-## **Deployment Properties:**
+# Linux/Unix SSH credentials with an escalation password to become 
+# root via "sudo su -"
 
-* nessus.targets  :  Specifies the target host(s) to scan. For use with test-only nessus deployments
+credential_type=SSH_SUDO
+username=cons3rt
+password={REPLACE_SSH_USER_PASSWORD}
+escalation_account=root
+escalation_password={REPLACE_SUDO_PASSWORD}
 
-_Targets can be entered by single IP address (e.g., 192.168.0.1), IP range (e.g., 192.168.0.1-192.168.0.255), subnet with CIDR notation (e.g., 192.168.0.0/24), resolvable host (e.g., www.nessus.org), or a single IPv6 address (e.g., link6%eth0, fe80::2120d:17ff:fe57:333b, fe80:0000:0000:0000:0216:cbff:fe92:88d0%eth0)._ 
+# Linux/Unix SSH credenitals with a separate root user password to
+# become root via "su root"
 
-* nessus.format  :  Specifies the format of the report.
+credential_type=SSH_SU
+username=cons3rt
+password={REPLACE_SSH_USER_PASSWORD}
+escalation_account=root
+escalation_password={REPLACE_ROOT_PASSWORD}
 
-_options are <span class="s1">pdf</span>, <span class="s1">html</span>, and <span class="s1">db</span> (<span class="s1">nessus</span> and <span class="s1">csv</span> formatted reports will be generated in addition. **Default is pdf**)_
 
-* nessus.chapters  :  Specifies the chapters to include in report
+```
 
-_expecting a <span class="s1">semi</span>-colon delimited string comprised of some combination of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, <span class="s1">remediations</span>, vuln_by_plugin, compliance _
+## Launch a Nessus Scan
 
-**_Default: vuln_hosts_summary or vuln_hosts_summary;compliance if audit file is detected_**
+There are two options for launching a scan.  First, include your Nessus Test
+Asset in a deployment that includes one or more scenarios.  In this case, the 
+Nessus Scanner will automatically target all systems included in the 
+deployment.  Secondly, you can deploy the Nessus Test Asset on its own in 
+your cloudspace, and target systems by IP address using the `nessus.targets` 
+deployment property as described below.
+
+For scanning one or more scenarios:
+
+* Navigate to your scenario, click "Add to Deployment Builder"
+* Navigate to other scenarios as needed, and click "Add to Deployment Builder"
+* Navigate to your imported Nessus Test Asset, and click "Add to Deployment Builder"
+* Specify custom properties as needed (see below), excluding `nessus.targets`
+* Launch your deployment, and the systems is the scenario are included as targets in the scan results
+
+For scanning specific targets:
+
+* Navigate to your imported Nessus Test Asset, and click "Add to Deployment Builder"
+* Specify custom properties as needed (see below), include `nessus.targets`, this is required
+* Launch your deployment, and the targets included in `nessus.targets` are included in the scan results
+
+## Test Results
+
+Download the Nessus Scan results on the run page, under the "Test Results" tab.
+By default, the results include a PDF file, a CSV file, and a ".nessus" file. 
+A downloadable zip file is available that contains all results files.  The 
+test result format is customizable 
+
+## Custom Properties
+
+Custom properties can be added in two places in CONS3RT.  First, as a step when saving
+a deployment, or secondly, as the has step before submitting a deployment run.
+Custom properties take the format of `key=value` pairs in the custom properties 
+page when creating and/or launching a deployment.  For customizing your Nessus 
+scan, you can set any of the properties defined below.  If a property is ommitted, 
+the default value will be used.  Or particular importance, is the `nessus.targets` 
+custom property.  This property is required to be set on Nessus scans, if there 
+are no other scenarios included in the deployment to scan.  In addition, if you 
+are scanning systems included in the deployment, do not set the `nessus.targets` 
+property.
+
+* `nessus.targets`: Specifies the target host(s) to scan. For use with test-only 
+nessus deployments where there is no a scenario included in the deployment. Examples 
+below.  Default is none, which scans systems in the deployment.
+
+```
+# Scan a single target by IP
+nessus.targets=172.16.11.100
+
+# Scan a target range
+nessus.targets=172.16.11.1-172.16.11.255
+
+# Scan a range by CIDR
+nessus.targets=172.16.11.0/24
+
+# Scan a resolvable host
+nessus.targets=www.nessus.org
+
+# Scan a single IPv6 host
+nessus.targets=fe80::2120d:17ff:fe57:333b
+```
+
+* `nessus.format`: Specify the format of the report (`html`, `pdf`, `db`, `nessus`, 
+`csv`).  Default is `pdf`.
+
+* `nessus.chapters`: Specifies the chapters to include in report. A Semi-colon delimited 
+string comprised of some combination of the following options: `vuln_hosts_summary`, 
+`vuln_by_host`, `compliance_exec`, `remediations`, `vuln_by_plugin`, and `compliance`.
+The default is either `vuln_hosts_summary` or `vuln_hosts_summary;compliance` if an 
+audit file is detected.
